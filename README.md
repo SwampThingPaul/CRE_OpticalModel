@@ -28,6 +28,21 @@ Some literature with general summaries specific to this project.
         contribution of chlorophyll a (Chl a) to light attenuation was
         less than both CDOM and turbidity.
 
+-   Corbett CA, Hale JA (2006) Development of water quality target for
+    Charlotte Harbor, Florida using seagrass light requirements. Florida
+    Scientist 69:36–50
+    [Link](https://www.jstor.org/stable/24322131?seq=1#metadata_info_tab_contents)
+
+    -   Provides an optical model to set water quality targets for
+        color, turbidity and chlorophyll a that maintain
+        percent-light-at-depth requirements to achieve the maximum
+        seagrass depth distribution presently observed in seagrass
+        transect monitoring. Analysis of recently collected water
+        quality data show that in all regions of the harbor, dry season
+        water quality in general met the percent-light-at-depth goals
+        proposed in this effort but less than half the data met the
+        goals during the wet season
+
 -   Dixon LK, Wessel MR (2016) A spectral optical model and updated
     water clarity reporting tool for Charlotte Harbor seagrasses.
     Florida Scientist 79:69–92.
@@ -51,3 +66,5 @@ Some literature with general summaries specific to this project.
 
     -   Suspended Solids, DOM (color), chlorophyll and water accounted
         for as much as 99% of k<sub>t</sub>
+
+------------------------------------------------------------------------
