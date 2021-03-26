@@ -9,6 +9,40 @@ surrounding areas. Optical models are useful in Colored dissolved
 organic matter (CDOM) dominated estuaries to evaluate changes in light
 attenuation and potential impacts to benthic ecology.
 
+### Study Area
+
+The Caloosahatchee River and its estuary is located on the lower west
+coast of Florida, USA (Fig 1). The historic Caloosahatchee River was
+originally shallow, meandering river with its headwaters located
+approximately 100 km inland at Lake Hicpochee and tidally influences
+approximately 70 km upstream. To accommodate navigation, flood control
+and land reclamation needs the river was straightened and extended
+eastward and connected to Lake Okeechobee in the late 1800s essentially
+converting the river to a canal, resulting in the C-43 canal
+designation. In the early 1900s three lock-and-dam structures were
+constructed to control flow and stage elevation along the river. Of the
+three lock-and-dam structures installed, the final downstream structure
+identified as the S-79 (Franklin Lock and Dam) regulates discharge from
+the canal to the estuary. The estuary portion of the Caloosahatchee
+River (hereafter Caloosahatchee River Estuary or CRE) extends
+approximately 48 km from the S-79 to San Carlos Bay, where it empties
+into the Gulf of Mexico and Pine Island Sound
+
+<div class="figure" style="text-align: center">
+
+<img src="./Plots/otherSource/JulianOsborne_Map.png" alt="The C-43 and Caloosahatchee River Estuary (CRE) with water quality; River, Estuary, and Coastal Observing Network (RECON); and flow, weather, and rainfall monitoring locations identified. Upper left inset identifies study location relative to the rest of peninsula Florida, USA. Upper right inset identifies the C-43 canal, C-43 basin, and estuary relative to Lake Okeechobee and associated water control structures. Source: Julian and Osborne (2018)" width="75%" />
+<p class="caption">
+The C-43 and Caloosahatchee River Estuary (CRE) with water quality;
+River, Estuary, and Coastal Observing Network (RECON); and flow,
+weather, and rainfall monitoring locations identified. Upper left inset
+identifies study location relative to the rest of peninsula Florida,
+USA. Upper right inset identifies the C-43 canal, C-43 basin, and
+estuary relative to Lake Okeechobee and associated water control
+structures. Source: Julian and Osborne (2018)
+</p>
+
+</div>
+
 ### Literature
 
 Some literature with general summaries specific to this project.

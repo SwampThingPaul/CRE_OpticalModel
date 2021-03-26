@@ -36,6 +36,10 @@ vignettes/*.pdf
 rsconnect/
 
 
-*.Rproj
+### Added 
 /src/
+
+*.Rproj
 README.Rmd
+/Data/
+/_documents/
