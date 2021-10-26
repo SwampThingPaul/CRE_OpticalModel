@@ -37,9 +37,11 @@ rsconnect/
 
 
 ### Added 
-/src/
+# /src/
 
 *.Rproj
 README.Rmd
 /Data/
 /_documents/
+
+/src/archive/
