@@ -81,6 +81,20 @@ plot(Kd~Kd.mod,chen.dat);abline(0,1)
 plot(Kd~Kd.chen,chen.dat);abline(0,1)
 plot(Kd.mod~Kd.chen,chen.dat);abline(0,1)
 
+# Data clean up
+chen.dat2=chen.dat[,c("Station.ID","Dates","salinity","Kd","chla","color","turb")]
+colnames(chen.dat2)=c("Station.ID","Date.EST","sal","K.par","Chla","color","Turb")
+
+chen.melt=melt(chen.dat2,id.vars=c("Station.ID","Date.EST"))
+chen.melt=subset(chen.melt,is.na(value)==F)
+chen.melt$source="Chen et al 2015"
+
+head(chen.melt)
+colnames(chen.melt)=c("Station.ID", "Date.EST", "param", "HalfMDL", "source")
+chen.melt=merge(chen.melt,data.frame(param=c("sal","K.par","Chla","color","Turb"),
+                                     Units=c("PSU","1/m","ug/L","PCU","NTU")),"param")
+chen.melt=chen.melt[,c( "Station.ID", "Date.EST","param", "Units", "HalfMDL", "source")]
+
 ## GIS
 Chen.latlong=read.xlsx(paste0(data.path,"SFWMD/Chen_etal/CDOM_sample_stations_lats_lons.xlsx"),
                        sheet=1)
@@ -99,8 +113,64 @@ Chen.sp=spTransform(SpatialPointsDataFrame(Chen.latlong[,c("LONGITUDE","LATITUDE
 tm_shape(Chen.sp)+tm_dots()
 
 
-# SFWMD - DBHydro ---------------------------------------------------------
+# SFWMD -------------------------------------------------------------------
+## From Public Records Request
+# wmd.dat=read.xlsx(paste0(data.path,"SFWMD/PPR_P007058-091421_Data.xlsx"),
+#                    sheet=1,startRow = 8 )
+# wmd.dat$DATE_COLLECTED=date.fun(convertToDate(wmd.dat$DATE_COLLECTED))
+# 
+# ddply(wmd.dat,c("STATION_ID"),summarise,N.val=N.obs("STATION_ID"))
+# 
+# 
+# params.summary=ddply(wmd.dat,c("TEST_NUMBER","TEST_NAME"),summarise,N.val=N.obs("STATION_ID"))
+# params=data.frame(TEST_NUMBER=c(11, 12, 13, 16, 61, 62, 112, 113, 178, 179, 180, 197),
+#                   param=c("SD","Turb","color","TSS","Chla","Chlb","Chla.c","Chlc","Chla.sal","Chla.LC","Chlb.LC","PAR"))
+# wmd.dat=merge(wmd.dat,params,"TEST_NUMBER")
+# wmd.dat$HalfMDL=with(wmd.dat,ifelse(VALUE<0,abs(VALUE)/2,VALUE))
+# 
+# wmd.dat.xtab=dcast(wmd.dat,STATION_ID+DATE_COLLECTED~param,value.var = "HalfMDL",mean)
+# plot(Chla.c~Chla,wmd.dat.xtab);abline(0,1);abline(lm(Chla.c~Chla,wmd.dat.xtab),col="red")
+# plot(Chla.LC~Chla,wmd.dat.xtab);abline(0,1);abline(lm(Chla.LC~Chla,wmd.dat.xtab),col="red")
+# plot(Chla.sal~Chla,wmd.dat.xtab);abline(0,1);abline(lm(Chla.LC~Chla,wmd.dat.xtab),col="red")
+# 
+# wmd.dat.xtab$Chla.CV=apply(wmd.dat.xtab[,c("Chla","Chla.c","Chla.LC","Chla.sal")],1,cv.per)*100
+# range(wmd.dat.xtab$Chla.CV,na.rm=T)
+# subset(wmd.dat.xtab,Chla.CV>50)
+# range(wmd.dat.xtab$DATE_COLLECTED)
+## DBHydro
+# dates=date.fun(c("2008-05-01","2021-09-01"))
+dates=date.fun(c("1999-05-01","2021-09-01"))
+sites=data.frame(Station.ID=c("S79",paste0("CES0",1:9),"CES11","ROOK471"),
+                 region=c(rep('FW',4),rep("Est",6),rep("Mar",2)))
 
+# params=data.frame(Test.Number=c(21,20,18,80,61,179,25,23),param=c("TKN","NH4","NOx","TN","Chla","Chla","TP","SRP"))
+params=data.frame(Test.Number=c(98,61,179,178,13,99,197,11,16,12,21,20,18,80,25,100),
+                  param=c("sal","Chla","Chla","Chla","color","depth","K.par","secchi","TSS","Turb","TKN","NH4","NOx","TN","TP","TOC"))
+wmd.dat2=data.frame()
+for(i in 1:nrow(sites)){
+  tmp=DBHYDRO_WQ(dates[1],dates[2],sites$Station.ID[i],params$Test.Number)
+  wmd.dat2=rbind(tmp,wmd.dat2)
+  print(i)
+}
+wmd.dat2=merge(wmd.dat2,params,"Test.Number")
+wmd.dat2=merge(wmd.dat2,sites,"Station.ID")
+ddply(wmd.dat2,c("param","Units"),summarise,N.val=N.obs(Value))
+subset(wmd.dat2,Station.ID==sites$Station.ID[2])
+
+# range(wmd.dat2$Depth,na.rm=T)
+# sum(is.na(wmd.dat2$Depth))
+# subset(wmd.dat2,Station.ID=="CES03"&Date.EST==date.fun("1999-05-12"))
+
+# Depth average data
+wmd.dat2.clean=ddply(wmd.dat2,c("Station.ID", "Date.EST","param", "Units"),summarise, HalfMDL=mean(HalfMDL))#,N.val=N.obs(param))
+# subset(wmd.dat2.clean,N.val>1)
+wmd.dat2.clean$source="SFWMD DBHYDRO"
+
+# wmd.dat2.xtab=dcast(subset(wmd.dat2,Test.Number%in%params.summary$TEST_NUMBER),Station.ID+region+Date.EST~param,value.var="HalfMDL",fun.aggregate=function(x) mean(x,na.rm=T))
+# nrow(wmd.dat.xtab)
+# nrow(wmd.dat2.xtab)
+
+wmd.dat2.xtab=dcast(wmd.dat2,Station.ID+region+Depth+Date.EST~param,value.var="HalfMDL",fun.aggregate=function(x) mean(x,na.rm=T))
 
 ## GIS
 sites=data.frame(Station.ID=c("S79",paste0("CES0",2:9),"CES11","ROOK471"),
@@ -125,7 +195,7 @@ unique(lee.dat$SAMPLE_LOCCODE)
 #                                 "COLOR", "L_TURB"),
 #                  Test.Name=c("Chla","DO.mgL","NOx","Sal","TP","TKN","TN","Turb","Color","TOC","TSS","PAR","SD",
 #                              "SPC","Turb","Color","Turb"))
-
+ddply(lee.dat,c("RESULT_ANALYTE","AUNIT"),summarise,N.val=N.obs(ID))
 param.xwalk=data.frame(RESULT_ANALYTE=c("Chlorophyll a - corrected for Pheophytin", "Pheophytin", "Color", 
                                         "Specific Conductance, 25°C, Field", "Specific Conductance, 25 C, Field", 
                                         "Oxygen, Dissolved, Electrode", "OXYGEN, DISSOLVED, ELECTRODE", 
@@ -136,19 +206,43 @@ param.xwalk=data.frame(RESULT_ANALYTE=c("Chlorophyll a - corrected for Pheophyti
                                         "Total Organic Carbon", "TOTAL ORGANIC CARBON", "Total Suspended Solids", 
                                         "Turbidity (Nephelometric)", "TURBIDITY (NEPHELOMETRIC)", "Turbidity (Nephelometric), field measure", 
                                         "TURBIDITY (NEPHELOMETRIC), FIELD MEASURE"),
-                       Test.Name=c("Chla","Pheo","Color",
+                       param=c("Chla","Pheo","color",
                                    "SPC","SPC",
                                    "DO.mgL","DO.mgL",
                                    "Turb","NOx","NOx",
-                                   "PAR","PAR",
-                                   "Sal","SD","SD",
+                                   "K.par","K.par",
+                                   "sal","secchi","secchi",
                                    "TP","TKN","TN",
                                    "TOC","TOC","TSS",
-                                   "Turb","Turb","Turb","Turb"))
+                                   "Turb","Turb","Turb","Turb"),
+                       Units=c("ug/L","ug/L","PCU",
+                               "uS/cm","uS/cm",
+                               rep("mg/L",2),
+                               "NTU",rep("mg/L",2),
+                               "1/m","1/m",
+                               "PSU","meters","meters",
+                               rep("mg/L",6),
+                               rep("NTU",4)))
 
 lee.dat=merge(lee.dat,param.xwalk,"RESULT_ANALYTE")
-lee.dat$Date.EST=date.fun(lee.dat$SAMPLE_COLDATE,form="%m/%d/%Y %H:%M")
-lee.dat$Station.ID=lee.dat$SAMPLE_LOCCODE
+lee.dat$SAMPLE_COLDATE=date.fun(lee.dat$SAMPLE_COLDATE,form="%m/%d/%Y %H:%M")
+lee.dat$Date.EST=date.fun(lee.dat$SAMPLE_COLDATE)
+# lee.dat$Station.ID=lee.dat$SAMPLE_LOCCODE
+lee.dat$HalfMDL=lee.dat$CALC_RESULT
+
+# head(ddply(subset(wmd.dat2.clean,Station.ID=="CES03"),"Date.EST",summarise,N.val=N.obs(HalfMDL)))
+# head(ddply(subset(lee.dat,SAMPLE_LOCCODE=="CES03SUR"),"Date.EST",summarise,N.val=N.obs(HalfMDL)))
+# subset(wmd.dat2.clean,Station.ID=="CES03"&Date.EST==date.fun("1999-05-12"))
+# subset(lee.dat,SAMPLE_LOCCODE=="CES03SUR"&Date.EST==date.fun("1999-05-12"))
+
+site.xwalk=data.frame(SAMPLE_LOCCODE=c("CES03SUR","CES04SUR","CES06SUR","CES10SUR","PI-01","PI-02","PI-13","PI-14"),
+                      Station.ID=c("CES03","CES04","CES06","CES10","PI-01","PI-02","PI-13","PI-14"))
+lee.dat=merge(lee.dat,site.xwalk,"SAMPLE_LOCCODE")
+
+# Depth average data
+lee.dat.clean=ddply(lee.dat,c("Station.ID", "Date.EST","param", "Units"),summarise, HalfMDL=mean(HalfMDL,na.rm=T))#,N.val=N.obs(param))
+# subset(lee.dat.clean,N.val>1)
+lee.dat.clean$source="Lee County"
 
 lee.dat.xtab=dcast(subset(lee.dat,SUSERFLDS_SAMP_TYPE=="SAMP"),Station.ID+Date.EST~Test.Name,value.var = "CALC_RESULT",mean)
 
@@ -176,3 +270,18 @@ lee.sp=spTransform(SpatialPointsDataFrame(lee.latlong[,c("LONGITUDE","LATITUDE")
 tm_shape(Chen.sp)+tm_dots(col="dodgerblue1",alpha=0.5,size=0.075)+
   tm_shape(wmd.mon2)+tm_dots(col="green",alpha=0.5,size=0.075)+
   tm_shape(lee.sp)+tm_dots(col="red",alpha=0.5,size=0.075)
+
+
+# merge datasets ----------------------------------------------------------
+head(chen.melt)
+head(wmd.dat2.clean)
+head(lee.dat.clean)
+
+all.dat=rbind(chen.melt,wmd.dat2.clean,lee.dat.clean)
+# write.csv(all.dat,paste0(export.path,"20211029_masterdata.csv"),row.names=F)
+dat.xtab=dcast(all.dat,Station.ID+source+Date.EST~param,value.var = "HalfMDL",mean)
+
+par(mar=c(5,5,1,1))
+plot(K.par~Date.EST,dat.xtab)
+plot(Chla~Date.EST,dat.xtab)
+plot(color~Date.EST,dat.xtab,ylab=c("Color (PCU)"))
