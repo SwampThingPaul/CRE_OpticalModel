@@ -8,6 +8,8 @@ Caloosahatchee River Estuary - Optical Model Evaluation
 -   [Data Inventory](#inv)
 -   [Literature](#lit)
 
+------------------------------------------------------------------------
+
 ### Purpose <a name="purp"></a>
 
 The objective of this project is to evaluate existing optical or
@@ -16,7 +18,7 @@ surrounding areas. Optical models are useful in Colored dissolved
 organic matter (CDOM) dominated estuaries to evaluate changes in light
 attenuation and potential impacts to benthic ecology.
 
-### Study Area
+### Study Area <a name="area"></a>
 
 The Caloosahatchee River and its estuary is located on the lower west
 coast of Florida, USA (Fig 1). The historic Caloosahatchee River was
@@ -50,7 +52,7 @@ structures. Source: Julian and Osborne (2018)
 
 </div>
 
-### Data Inventory
+### Data Inventory <a name="inv"></a>
 
 <div class="figure" style="text-align: center">
 
@@ -63,7 +65,7 @@ programs
 
 </div>
 
-### Literature
+### Literature <a name="lit"></a>
 
 Some literature with general summaries specific to this project.
 

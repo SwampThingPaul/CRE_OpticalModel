@@ -280,8 +280,37 @@ head(lee.dat.clean)
 all.dat=rbind(chen.melt,wmd.dat2.clean,lee.dat.clean)
 # write.csv(all.dat,paste0(export.path,"20211029_masterdata.csv"),row.names=F)
 dat.xtab=dcast(all.dat,Station.ID+source+Date.EST~param,value.var = "HalfMDL",mean)
-
+dat.xtab$TN=with(dat.xtab,TN_Combine(NOx,TKN,TN))
 par(mar=c(5,5,1,1))
 plot(K.par~Date.EST,dat.xtab)
 plot(Chla~Date.EST,dat.xtab)
 plot(color~Date.EST,dat.xtab,ylab=c("Color (PCU)"))
+
+
+vars=c("Station.ID","Date.EST", "sal", "K.par", "Chla", 
+  "color", "Turb", "TOC","TP", "TSS", "TN", "DO.mgL")
+plot.vars=data.frame(variable=vars[3:12],plot.val=1:10)
+
+dput(unique(dat.xtab$Station.ID))
+site.ls=c( "S79","CES01", "CES02", "CES03", "CES04", "CES05", "CES06", "CES06A", 
+          "CES07", "CES08", "CES09", "CES10", "CES11", "PI-01", "PI-02", 
+          "PI-13", "PI-14", "ROOK471", "SOUTH6")
+
+# png(filename=paste0(plot.path,"20211101_DataInventory.png"),width=6.5,height=6,units="in",res=200,type="windows",bg="white")
+par(family="serif",mar=c(1,1,1,1),oma=c(2,3,0.5,1),lwd=0.5);
+layout(matrix(1:20,5,4,byrow=F))
+
+xlim.val=dates;xmaj=seq(xlim.val[1],xlim.val[2],"5 years");xmin=seq(xlim.val[1],xlim.val[2],"1 years")
+for(i in 1:length(site.ls)){
+tmp=reshape2::melt(subset(dat.xtab,Station.ID==site.ls[i])[,vars],id.vars=vars[1:2])
+tmp=merge(tmp,plot.vars,"variable")
+plot(plot.val~Date.EST,tmp,type="n",ann=F,axes=F,ylim=c(1,10),xlim=xlim.val)
+with(tmp,points(Date.EST,plot.val,pch=21,bg=adjustcolor("indianred1",0.25),col=adjustcolor("indianred1",0.5)))
+if(i%in%c(1:5)){axis_fun(2,1:10,1:10,plot.vars$variable,cex=0.75)}else{axis_fun(2,1:10,1:10,NA)}     
+if(i%in%c(5,10,15,19)){axis_fun(1,xmaj,xmin,format(xmaj,"%m-%Y"),line=-0.75,cex=0.75)}else{axis_fun(1,xmaj,xmin,NA)}
+box(lwd=1)
+mtext(side=3,adj=0,site.ls[i],cex=0.75)
+}
+mtext(side=2,"Variable",line=1.5,outer=T)
+mtext(side=1,"Date (Month-Year)",line=0.5,outer=T)
+dev.off()
