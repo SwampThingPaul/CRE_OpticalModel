@@ -1,7 +1,14 @@
 Caloosahatchee River Estuary - Optical Model Evaluation
 ================
 
-### Purpose
+## Table of Contents
+
+-   [Purpose](#purp)
+-   [Study Area](#area)
+-   [Data Inventory](#inv)
+-   [Literature](#lit)
+
+### Purpose <a name="purp"></a>
 
 The objective of this project is to evaluate existing optical or
 spectral models developed for the tidal Caloosahatchee River Estuary and
@@ -39,6 +46,19 @@ identifies study location relative to the rest of peninsula Florida,
 USA. Upper right inset identifies the C-43 canal, C-43 basin, and
 estuary relative to Lake Okeechobee and associated water control
 structures. Source: Julian and Osborne (2018)
+</p>
+
+</div>
+
+### Data Inventory
+
+<div class="figure" style="text-align: center">
+
+<img src="./Plots/20211101_DataInventory.png" alt="Data inventory of selected variables from monitoring location across the estuary between Lee county environmental monitoring and SFWMD monitoring programs" width="100%" />
+<p class="caption">
+Data inventory of selected variables from monitoring location across the
+estuary between Lee county environmental monitoring and SFWMD monitoring
+programs
 </p>
 
 </div>
