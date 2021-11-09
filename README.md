@@ -6,6 +6,7 @@ Caloosahatchee River Estuary - Optical Model Evaluation
 -   [Purpose](#purp)
 -   [Study Area](#area)
 -   [Data Inventory](#inv)
+-   [Data](#data)
 -   [Literature](#lit)
 
 ------------------------------------------------------------------------
@@ -56,7 +57,7 @@ structures. Source: Julian and Osborne (2018)
 
 <div class="figure" style="text-align: center">
 
-<img src="./Plots/20211101_DataInventory.png" alt="Data inventory of selected variables from monitoring location across the estuary between Lee county environmental monitoring and SFWMD monitoring programs" width="100%" />
+<img src="./Plots/20211104_DataInventory.png" alt="Data inventory of selected variables from monitoring location across the estuary between Lee county environmental monitoring and SFWMD monitoring programs" width="100%" />
 <p class="caption">
 Data inventory of selected variables from monitoring location across the
 estuary between Lee county environmental monitoring and SFWMD monitoring
@@ -64,6 +65,24 @@ programs
 </p>
 
 </div>
+
+### Data <a name="data"></a>
+
+Data from South Florida Water Management District SFWMD and Lee County
+were collated into a final dataset. The final dataset will have optical,
+physical and nutrient parameters for monitoring locations within the
+Caloosahatchee River Estuary.
+
+-   *SFWMD:*
+    -   Fatally Qualified data were removed.
+    -   Only samples taken within the first 2 meters were considered.
+    -   If more than one sample was collected in a given day, average
+        values were computed (including samples within the 2-meter water
+        depth).
+-   *Lee County:*
+    -   Surface water samples only
+    -   Fatally qualified data were removed.
+    -   Field duplicate samples (QA/QC) were removed.
 
 ### Literature <a name="lit"></a>
 
@@ -122,5 +141,22 @@ Some literature with general summaries specific to this project.
 
     -   Suspended Solids, DOM (color), chlorophyll and water accounted
         for as much as 99% of k<sub>t</sub>
+
+-   Choice ZD, Frazer TK, Jacoby CA (2014) Light requirements of
+    seagrasses determined from historical records of light attenuation
+    along the Gulf coast of peninsular Florida. Marine Pollution
+    Bulletin 81:94–102.
+    [10.1016/j.marpolbul.2014.02.015](https://www.sciencedirect.com/science/article/pii/S0025326X14001118?casa_token=47OlgPYT0mcAAAAA:AEACtmuKK8KTIplDAJDvBR8XWIEyU8MWnF-FdZ9gOqtGJ7fG53kOiWWrwZl_yGUhF5jK9KAK4Gw)
+
+    -   light requirements were determined for four common and abundant
+        seagrasses along the Gulf coast of peninsular Florida using a
+        threshold detecting algorithm. Light requirements ranged from 8%
+        to 10% of surface irradiance for *Halophila engelmannii* to
+        25–27% of surface irradiance for *Halodule wrightii*.
+
+    -   Study performed across a color (DOM) gardient from high
+        (Steinhatchee, Suwannee and Waccasassa) to relatively clear
+        water systems along the Springs Coast (Big Bend from Weeki
+        Wachee to Steinhatchee).
 
 ------------------------------------------------------------------------
