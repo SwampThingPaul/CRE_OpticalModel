@@ -295,7 +295,7 @@ K_{d} = 0.014 \times Color \ + \ 0.062 \times Turbidity \ + 0.049 \times Chla \ 
 
 ![R^{2}=0.89; \\rho&lt;0.0001](https://latex.codecogs.com/png.latex?R%5E%7B2%7D%3D0.89%3B%20%5Crho%3C0.0001 "R^{2}=0.89; \rho<0.0001")
 
-**Model recreated with available data*
+**Model recreated with available data**
 
 ![
 K\_{d} = 0.015 \\times Color \\ + \\ 0.070 \\times Turbidity \\ + 0.059 \\times Chla \\ + 0.33
@@ -304,4 +304,4 @@ K_{d} = 0.015 \times Color \ + \ 0.070 \times Turbidity \ + 0.059 \times Chla \ 
 ")
 
 ![R^{2}=0.83;\\sigma = 0.2647; \\rho&lt;0.01](https://latex.codecogs.com/png.latex?R%5E%7B2%7D%3D0.83%3B%5Csigma%20%3D%200.2647%3B%20%5Crho%3C0.01 "R^{2}=0.83;\sigma = 0.2647; \rho<0.01")
-***
+\*\*\*
