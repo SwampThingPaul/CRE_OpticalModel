@@ -109,6 +109,9 @@ ddply(dat.xtab,c("siteName"),summarise,
       StDev=sd(Kpar,na.rm=T),
       N.val=N.obs(Kpar))
 
+subset(dat.xtab,siteName=="TB3-depth")
+subset(dat.xtab,siteName=="TB3")
+
 kpar.mod=lm(Kpar~Color+Turb+Chla,dat.xtab)
 summary(kpar.mod)
 

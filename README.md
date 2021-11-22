@@ -8,6 +8,7 @@ Caloosahatchee River Estuary - Optical Model Evaluation
 -   [Data Inventory](#inv)
 -   [Data](#data)
 -   [Literature](#lit)
+    -   [McPherson and Miller (1994)](#McPherson)
 
 ------------------------------------------------------------------------
 
@@ -142,6 +143,11 @@ Some literature with general summaries specific to this project.
     -   Suspended Solids, DOM (color), chlorophyll and water accounted
         for as much as 99% of k<sub>t</sub>
 
+-   McPherson B, Miller R (1994) Causes of Light Attenuation in Tampa
+    Bay and Charlotte Harbor, Southwestern Florida. Journal of The
+    American Water Resources Association - J AM WATER RESOUR ASSOC
+    30:43–53.
+
 -   Choice ZD, Frazer TK, Jacoby CA (2014) Light requirements of
     seagrasses determined from historical records of light attenuation
     along the Gulf coast of peninsular Florida. Marine Pollution
@@ -158,5 +164,135 @@ Some literature with general summaries specific to this project.
         (Steinhatchee, Suwannee and Waccasassa) to relatively clear
         water systems along the Springs Coast (Big Bend from Weeki
         Wachee to Steinhatchee).
+
+------------------------------------------------------------------------
+
+#### McPherson and Miller (1994) <a name="McPherson"></a>
+
+Data was retrieved from USGS NWIS to recreate the optical model
+presented by McPherson and Miller. All sites (and presumbly) data used
+in the original publication was retrieved from USGS NWIS except for site
+CH11 (in Charlotte Harbor).
+
+<div class="figure" style="text-align: center">
+
+<img src="./Plots/McPhersonMiller_SamplingMap.png" alt="Map of monitoring locations used by McPherson and Miller (1987), reproduced using available data in USGS NWIS." width="75%" />
+<p class="caption">
+Map of monitoring locations used by McPherson and Miller (1987),
+reproduced using available data in USGS NWIS.
+</p>
+
+</div>
+
+``` r
+library(AnalystHelper)
+library(reshape2)
+library(dataRetrieval)
+USGS.CH.sites=data.frame(siteID=c("264408082204800","263840082120500",
+                                  "263840082114800","265355082075500",
+                                  "262839082041200","262829082041200",
+                                  "265522082064600","270055081590300"),
+                         siteName=c("CH15.1","CH20",
+                                    "CH20.SG","CH6",
+                                    "CH24","CH24.SG",
+                                    "CH5","CH29"))
+USGS.TB.sites=data.frame(siteID=c("274837082314600","275701082375599",
+                                  "275530082383300","274033082385300",
+                                  "273900082385300","273631082452600",
+                                  "275134082270599"),
+                         siteName=c("TB2","TB3-depth","TB3",
+                                    "TB4","TB5","TB6","TB1"))
+usgs.sites=rbind(USGS.CH.sites,USGS.TB.sites)
+usgs.sites$MonitoringLocationIdentifier=paste0("USGS-",usgs.sites$siteID)
+
+NWIS.siteinfo=readNWISsite(usgs.sites$siteID)
+
+## Retrieve Data for NWIS (except CH11)
+dates=date.fun(c("1989-10-01","1991-10-31"))
+dat=readWQPdata(siteNumbers=usgs.sites$MonitoringLocationIdentifier,
+                startDate=dates[1],endDate=dates[2])
+
+pCode=c("00080","00076","70953","70957","70971")
+param.xwalk=data.frame(parm_cd=pCode,
+                       param=c("Color","Turb","Chla","Chla","Kpar"))
+dat=readNWISqw(siteNumbers=usgs.sites$siteID,
+                startDate=dates[1],endDate=dates[2],parameterCd=pCode)
+
+dat=merge(dat,param.xwalk,"parm_cd")
+dat=merge(dat,usgs.sites,by.x="site_no",by.y="siteID")
+dat$sample_dt=date.fun(dat$sample_dt)
+dat.xtab=dcast(dat,siteName+sample_dt~param,value.var="result_va",mean)
+
+# Kpar model 
+kpar.mod=lm(Kpar~Color+Turb+Chla,dat.xtab)
+summary(kpar.mod)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = Kpar ~ Color + Turb + Chla, data = dat.xtab)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -0.72788 -0.13678 -0.03602  0.11608  1.76657 
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 0.331103   0.040154   8.246 9.99e-14 ***
+    ## Color       0.015077   0.000645  23.376  < 2e-16 ***
+    ## Turb        0.069904   0.012140   5.758 5.05e-08 ***
+    ## Chla        0.059425   0.008751   6.791 2.82e-10 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 0.2647 on 142 degrees of freedom
+    ##   (78 observations deleted due to missingness)
+    ## Multiple R-squared:   0.83,  Adjusted R-squared:  0.8265 
+    ## F-statistic: 231.2 on 3 and 142 DF,  p-value: < 2.2e-16
+
+``` r
+gvlma::gvlma(kpar.mod)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = Kpar ~ Color + Turb + Chla, data = dat.xtab)
+    ## 
+    ## Coefficients:
+    ## (Intercept)        Color         Turb         Chla  
+    ##     0.33110      0.01508      0.06990      0.05942  
+    ## 
+    ## 
+    ## ASSESSMENT OF THE LINEAR MODEL ASSUMPTIONS
+    ## USING THE GLOBAL TEST ON 4 DEGREES-OF-FREEDOM:
+    ## Level of Significance =  0.05 
+    ## 
+    ## Call:
+    ##  gvlma::gvlma(x = kpar.mod) 
+    ## 
+    ##                       Value  p-value                   Decision
+    ## Global Stat        1472.927 0.000000 Assumptions NOT satisfied!
+    ## Skewness            135.868 0.000000 Assumptions NOT satisfied!
+    ## Kurtosis           1325.855 0.000000 Assumptions NOT satisfied!
+    ## Link Function         6.687 0.009713 Assumptions NOT satisfied!
+    ## Heteroscedasticity    4.517 0.033562 Assumptions NOT satisfied!
+
+``` r
+layout(matrix(1:4,2,2))
+plot(kpar.mod)
+```
+
+![Linear model diagnostic plots from the kpar.mod model
+object.](README_files/figure-gfm/unnamed-chunk-5-1.png)
+
+**Model cited in McPherson and Miller (1994)**
+
+![
+K\_{d} = 0.014 \\times Color \\ + \\ 0.062 \\times Turbidity \\ + 0.049 \\times Chla \\ + 0.30
+](https://latex.codecogs.com/png.latex?%0AK_%7Bd%7D%20%3D%200.014%20%5Ctimes%20Color%20%5C%20%2B%20%5C%200.062%20%5Ctimes%20Turbidity%20%5C%20%2B%200.049%20%5Ctimes%20Chla%20%5C%20%2B%200.30%0A "
+K_{d} = 0.014 \times Color \ + \ 0.062 \times Turbidity \ + 0.049 \times Chla \ + 0.30
+")
+
+![R^{2}=0.89; \\rho&lt;0.0001](https://latex.codecogs.com/png.latex?R%5E%7B2%7D%3D0.89%3B%20%5Crho%3C0.0001 "R^{2}=0.89; \rho<0.0001")
 
 ------------------------------------------------------------------------
