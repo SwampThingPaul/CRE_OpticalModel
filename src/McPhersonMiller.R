@@ -202,7 +202,7 @@ summary(dat.xtab)
 
 quantile(dat.xtab$Color,probs=0.95,na.rm=T)
 
-# Bootstrap example
+# Bootstrap example (work in progress)
 # http://www.utstat.toronto.edu/~brunner/oldclass/appliedf12/lectures/2101f12BootstrapR.pdf
 set.seed(123)
 n=1000
@@ -235,7 +235,13 @@ qqnorm(mstar.Turb);qqline(mstar.Turb)
 # 
 # Kd=0.014*color+0.062*turb+0.049*chla+0.30
 betahat=cbind(0.30,0.014,0.062,0.049)
-rownames(betahat)="betahat"
+# rownames(betahat)="betahat"
+terms(Kd.sim.samp~col.sim.samp+Turb.sim.samp+Chla.sim.samp)
+MM.mod=list("(Intercept)", "col.sim.samp"," Turb.sim.samp"," Chla.sim.samp")
+class(MM.mod)<-c("lm")
+MM.mod$coefficients=betahat
+
+betahat=coef(MM.mod)
 
 set.seed(1234)
 B=1000
@@ -245,7 +251,8 @@ for(i in 1:B){
 col.sim.samp=col.sim[sample(1:n2,size=n2,replace=T)]
 Chla.sim.samp=Chla.sim[sample(1:n2,size=n2,replace=T)]
 Turb.sim.samp=Turb.sim[sample(1:n2,size=n2,replace=T)]
-Kd.sim.samp=Kpar.sim[sample(1:n2,size=n2,replace=T)]
+Kd.sim.samp=(0.30+0.014*col.sim.samp+0.062*Turb.sim.samp+0.049*Chla.sim.samp)
+# Kd.sim.samp=Kpar.sim[sample(1:n2,size=n2,replace=T)]
 
 dat.sim=data.frame(cbind(Kd.sim.samp,col.sim.samp,Turb.sim.samp,Chla.sim.samp))
 mod.sim=lm(Kd.sim.samp~col.sim.samp+Turb.sim.samp+Chla.sim.samp,dat.sim)
@@ -271,9 +278,8 @@ WaldTest = function(L,thetahat,Vn,h=0) # H0: L theta = h
 {
  WaldTest = numeric(3)
  names(WaldTest) = c("W","df","p-value")
- r = dim(L)[1]
- W = t(L%*%thetahat-h) %*% solve(L%*%Vn%*%t(L)) %*%
- (L%*%thetahat-h)
+  r = dim(L)[1]
+ W = t(L%*%thetahat-h) %*% solve(L%*%Vn%*%t(L)) %*% (L%*%thetahat-h)
  W = as.numeric(W)
  pval = 1-pchisq(W,r)
  WaldTest[1] = W; WaldTest[2] = r; WaldTest[3] = pval
@@ -282,6 +288,28 @@ WaldTest = function(L,thetahat,Vn,h=0) # H0: L theta = h
 
 
 Lprod = rbind( c(0,1,0,0),
-             + c(0,0,1,0))
+             + c(0,0,1,0)
+             + c(0,0,0,1))
 WaldTest(Lprod,betahat,Vb)
 
+##
+set.seed(3201); alpha=2; beta=3
+D <- round(rgamma(50,shape=alpha, scale=beta),2); D
+momalpha <- mean(D)^2/var(D); momalpha
+mombeta <- var(D)/mean(D); mombeta
+
+gmll2 <- function(theta,datta)
+  { gmll2 <- -sum(dgamma(datta,shape=theta[1],scale=theta[2],log=T))
+    gmll2
+  } # End of gmll2
+# Maximum likelihood estimation
+gamama = nlm(gmll2,c(momalpha,mombeta),hessian=T,datta=D)
+thetahat = gamama$estimate; thetahat
+kov = solve(gamama$hessian) # Inverse of (estimated) observed info
+kov
+
+# Test H0: alpha = beta
+# LR test gave G2 = 4.2776, p = 0.039
+
+LL = rbind(c(1,-1)); LL
+WaldTest(LL,thetahat,kov)
